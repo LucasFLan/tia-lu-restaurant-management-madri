@@ -1,23 +1,29 @@
 fun main() {
 
-    var itensMenu = mutableListOf<Produto>()
     var pedidos = mutableListOf<Pedido>()
 
     var isOnInterface: Boolean = true
 
     do {
-        println("1 - Cadastrar item")
-        println("2 - Atualizar item")
-        println("3 - Criar pedido")
-        println("4 - Atualizar pedido")
-        println("5 - Consultar pedidos")
-        println("6 - Sair")
+        println("===================================")
+        println("|          MENU PRINCIPAL          |")
+        println("===================================")
+        println("| 1 -> Cadastrar item               |")
+        println("| 2 -> Atualizar item               |")
+        println("| 3 -> Criar pedido                 |")
+        println("| 4 -> Atualizar pedido             |")
+        println("| 5 -> Consultar pedidos            |")
+        println("| 6 -> Sair                         |")
+        println("===================================")
+        print("Escolha uma opção: ")
 
         val opcaoEscolhida: Int = readln().toInt()
 
         when(opcaoEscolhida) {
             1 -> {
-                println("---CADASTRO DE ITEM---")
+                println("===================================")
+                println("|         CADASTRO DE ITEM        |")
+                println("===================================")
                 println("Nome do item")
                 val nomeItem: String = readln()
 
@@ -31,28 +37,29 @@ fun main() {
                     println("Quantidade em estoque")
                     val estoqueItem: Int = readln().toInt()
 
-                    val novoProduto = Produto(nome = nomeItem, descricao = descricaoItem, preco = precoItem, estoque = estoqueItem,
-                        codigo = itensMenu.size + 1)
+                    adicionarItemAoMenu(nomeItem, descricaoItem, precoItem, estoqueItem)
+                    println("Item adicionado com sucesso!!")
 
-                    itensMenu.add(novoProduto)
                 } catch (e: NumberFormatException){
                     println("Entrada inválida, digite um número para preço e estoque")
                 }
             }
             2 -> {
-                println("---ATUALIZAÇÃO ITEM---")
-                if(itensMenu.isEmpty()) {
+                println("===================================")
+                println("|      ATUALIZAÇÃO DE ITENS       |")
+                println("===================================")
+                if(menu.isEmpty()) {
                     println("Sem itens no menu\n")
                 } else {
                     println("Qual item deseja atualizar?\n")
 
-                    for (item in itensMenu) {
+                    for (item in menu) {
                         println("${item.codigo} - ${item.nome}")
                     }
 
                     val codigoItemSelecionado: Int = readln().toInt()
 
-                    val itemSelecionado: Produto? = itensMenu.find { it.codigo == codigoItemSelecionado }
+                    val itemSelecionado: Produto? = menu.find { it.codigo == codigoItemSelecionado }
 
                     if(itemSelecionado == null) {
                         println("Item não encontrado")
@@ -92,7 +99,9 @@ fun main() {
                 }
             }
             3 -> {
-                println("---CRIAÇÃO DE PEDIDO---")
+                println("===================================")
+                println("|       CRIAÇÃO DE PEDIDOS        |")
+                println("===================================")
 
                 var fazendoPedido = true
                 var escolhendoItens = true
@@ -109,30 +118,32 @@ fun main() {
                     valor = 0f, status = OrderStatus.ACEITO)
 
                 do {
-                    println("1 - Adicionar itens ao pedido")
-                    println("2 - Finalizar pedido")
-                    println("3 - Limpar carrinho")
-                    println("4 - Voltar")
+                    println("===================================")
+                    println("| 1 | Adicionar itens ao pedido    |")
+                    println("| 2 | Finalizar pedido             |")
+                    println("| 3 | Limpar carrinho              |")
+                    println("| 4 | Voltar                       |")
+                    println("===================================")
 
                     val opcaoEscolhida: Int = readln().toInt()
 
                     when (opcaoEscolhida) {
                         1 -> {
                             do {
-                                if(itensMenu.isEmpty()) {
+                                if(menu.isEmpty()) {
                                     println("Nenhum item cadastrado\n")
                                     break
                                 }
 
                                 println("Qual item deseja adicionar ao pedido?\n")
-                                for (item in itensMenu) {
+                                for (item in menu) {
                                     println("${item.codigo} - ${item.nome} | Descrição: ${item.descricao} | " +
                                             "Preço: R$${item.preco} | Quantidade disponível: ${item.estoque}")
                                 }
 
                                 val codigoItemEscolhido: Int = readln().toInt()
 
-                                val produtoEscolhido: Produto? = itensMenu.find {it.codigo == codigoItemEscolhido}
+                                val produtoEscolhido: Produto? = menu.find {it.codigo == codigoItemEscolhido}
 
                                 if(produtoEscolhido == null){
                                     println("Produto nao encontrado")
@@ -195,7 +206,7 @@ fun main() {
                                 println("O carrinho está vazio")
                             } else {
                                 itensEscolhidos.forEach {
-                                    itensMenu[it.codigo - 1].estoque += quantidade
+                                    menu[it.codigo - 1].estoque += quantidade
                                 }
                                 novoPedido.valor = 0f
                                 itensEscolhidos.clear()
@@ -213,7 +224,9 @@ fun main() {
                 } while (fazendoPedido)
             }
             4 -> {
-                println("---ATUALIZAÇÃO DO STATUS DO PEDIDO---")
+                println("===========================================")
+                println("|   ATUALIZAÇÃO DO STATUS DO PEDIDO       |")
+                println("===========================================")
 
                 if(pedidos.isEmpty()) {
                     println("Sem pedidos por aqui\n")
@@ -261,7 +274,9 @@ fun main() {
 
             }
             5 -> {
-                println("---CONSULTA DE PEDIDOS---")
+                println("===================================")
+                println("|       CONSULTA DE PEDIDOS       |")
+                println("===================================")
 
                 var estaConsultando = true
 
