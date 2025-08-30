@@ -37,7 +37,7 @@ fun main() {
                     println("Quantidade em estoque")
                     val estoqueItem: Int = readln().toInt()
 
-                    adicionarItemAoMenu(nomeItem, descricaoItem, precoItem, estoqueItem)
+                    adicionar_item_ao_menu(nomeItem, descricaoItem, precoItem, estoqueItem)
                     println("Item adicionado com sucesso!!")
 
                 } catch (e: NumberFormatException){
@@ -70,10 +70,10 @@ fun main() {
                         val novaDescricao: String = readln()
 
                         try {
-                            println("Deseja atualizar o preço? Se sim, digite o novo preço, se não digite 0")
-                            val novoPreco: Float = readln().toFloat()
-                            println("Deseja atualizar o estoque? Se sim, digite a quantidade a ser somada no estoque, se não digite 0")
-                            val novoEstoque: Int = readln().toInt()
+                            println("Deseja atualizar o preço? Se sim, digite o novo preço, se não aperte Enter")
+                            val novoPreco: Float? = readln().toFloatOrNull()
+                            println("Deseja atualizar o estoque? Se sim, digite a quantidade a ser somada no estoque, se não aperte Enter")
+                            val novoEstoque: Int? = readln().toIntOrNull()
 
                             if(novoNome != "") {
                                 itemSelecionado.nome = novoNome
@@ -83,11 +83,11 @@ fun main() {
                                 itemSelecionado.descricao = novaDescricao
                             }
 
-                            if(novoPreco != 0f){
+                            if(novoPreco != null){
                                 itemSelecionado.preco = novoPreco
                             }
 
-                            if(novoEstoque != 0) {
+                            if(novoEstoque != null) {
                                 itemSelecionado.estoque += novoEstoque
                             }
 
@@ -125,7 +125,7 @@ fun main() {
                     println("| 4 | Voltar                       |")
                     println("===================================")
 
-                    val opcaoEscolhida: Int = readln().toInt()
+                    val opcaoEscolhida: Int? = readln().toIntOrNull()
 
                     when (opcaoEscolhida) {
                         1 -> {
@@ -141,7 +141,7 @@ fun main() {
                                             "Preço: R$${item.preco} | Quantidade disponível: ${item.estoque}")
                                 }
 
-                                val codigoItemEscolhido: Int = readln().toInt()
+                                val codigoItemEscolhido: Int? = readln().toIntOrNull()
 
                                 val produtoEscolhido: Produto? = menu.find {it.codigo == codigoItemEscolhido}
 
@@ -220,6 +220,7 @@ fun main() {
                                 println("Você deve finalizar o seu pedido ou limpar o seu carrinho!!!")
                             }
                         }
+                        else -> println("Digite uma opção válida")
                     }
                 } while (fazendoPedido)
             }
@@ -289,29 +290,20 @@ fun main() {
 
                     println("Vizualizar pedidos:")
                     println("1 - VER TODOS")
-                    println("2 - ACEITO")
-                    println("3 - FAZENDO")
-                    println("4 - FEITO")
-                    println("5 - ESPERANDO ENTREGADOR")
-                    println("6 - SAIU PARA ENTREGA")
-                    println("7 - ENTREGUE")
-                    println("8 - Sair da consulta")
+                    for ((index, status) in OrderStatus.entries.withIndex()) {
+                        println("${index + 2} - $status")
+                    }
+                    println("${OrderStatus.entries.size + 2} - Sair")
 
                     val opcaoEscolhida: Int = readln().toInt()
-                    var pedidosPorStatus: List<Pedido> = listOf()
+                    var pedidosPorStatus: List<Pedido>
 
                     when (opcaoEscolhida) {
-                        1 -> {
-                            for (pedido in pedidos) {
-                                println("Pedido ${pedido.numeroPedido} - Itens: ${pedido.itens} - VALOR: R$${pedido.valor} - ${pedido.pagamento} - ${pedido.status}")
-                            }
+                        1 -> pedidosPorStatus = pedidos
+                        in 2..OrderStatus.entries.size + 1 -> {
+                            val statusEscolhido = OrderStatus.entries[opcaoEscolhida - 2]
+                            pedidosPorStatus = pedidos.filter { it.status == statusEscolhido }
                         }
-                        2 -> pedidosPorStatus = pedidos.filter { it.status == OrderStatus.ACEITO }
-                        3 -> pedidosPorStatus = pedidos.filter { it.status == OrderStatus.FAZENDO }
-                        4 -> pedidosPorStatus = pedidos.filter { it.status == OrderStatus.FEITO }
-                        5 -> pedidosPorStatus = pedidos.filter { it.status == OrderStatus.ESPERANDO_ENTREGADOR }
-                        6 -> pedidosPorStatus = pedidos.filter { it.status == OrderStatus.SAIU_PARA_ENTREGA }
-                        7 -> pedidosPorStatus = pedidos.filter { it.status == OrderStatus.ENTREGUE }
                         8 -> {
                             println("Saindo...")
                             estaConsultando = false

@@ -25,7 +25,7 @@ enum class OrderStatus {
 
 var menu = mutableListOf<Produto>()
 
-fun adicionarItemAoMenu(nomeItem: String, descricaoItem: String, precoItem: Float, estoqueItem: Int) {
+fun adicionar_item_ao_menu(nomeItem: String, descricaoItem: String, precoItem: Float, estoqueItem: Int) {
     val novoProduto = Produto(nome = nomeItem, descricao = descricaoItem, preco = precoItem, estoque = estoqueItem,
         codigo = menu.size + 1)
 
