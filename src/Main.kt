@@ -1,28 +1,3 @@
-data class Produto (
-    var nome: String,
-    var descricao: String,
-    var preco: Float,
-    var estoque: Int,
-    var codigo: Int
-)
-
-enum class OrderStatus{
-    ACEITO,
-    FAZENDO,
-    FEITO,
-    ESPERANDO_ENTREGADOR,
-    SAIU_PARA_ENTREGA,
-    ENTREGUE
-}
-
-data class Pedido (
-    var numeroPedido: Int,
-    var itens: MutableList<Produto>,
-    var pagamento: String,
-    var status: OrderStatus,
-    var valor: Float
-)
-
 fun main() {
 
     var itensMenu = mutableListOf<Produto>()
@@ -42,14 +17,14 @@ fun main() {
 
         when(opcaoEscolhida) {
             1 -> {
+                println("---CADASTRO DE ITEM---")
+                println("Nome do item")
+                val nomeItem: String = readln()
+
+                println("Descrição do item")
+                val descricaoItem: String = readln()
+
                 try {
-                    println("---CADASTRO DE ITEM---")
-                    println("Nome do item")
-                    val nomeItem: String = readln()
-
-                    println("Descrição do item")
-                    val descricaoItem: String = readln()
-
                     println("Preço")
                     val precoItem: Float = readln().toFloat()
 
@@ -65,28 +40,29 @@ fun main() {
                 }
             }
             2 -> {
-                try {
-                    println("---ATUALIZAÇÃO ITEM---")
-                    if(itensMenu.isEmpty()) {
-                        println("Sem itens no menu\n")
+                println("---ATUALIZAÇÃO ITEM---")
+                if(itensMenu.isEmpty()) {
+                    println("Sem itens no menu\n")
+                } else {
+                    println("Qual item deseja atualizar?\n")
+
+                    for (item in itensMenu) {
+                        println("${item.codigo} - ${item.nome}")
+                    }
+
+                    val codigoItemSelecionado: Int = readln().toInt()
+
+                    val itemSelecionado: Produto? = itensMenu.find { it.codigo == codigoItemSelecionado }
+
+                    if(itemSelecionado == null) {
+                        println("Item não encontrado")
                     } else {
-                        println("Qual item deseja atualizar?\n")
+                        println("Deseja atualizar nome? Se sim, digite o novo nome, se não aperte Enter")
+                        val novoNome: String = readln()
+                        println("Deseja atualizar a descrição? Se sim, digite o novo nome, se não aperte Enter")
+                        val novaDescricao: String = readln()
 
-                        for (item in itensMenu) {
-                            println("${item.codigo} - ${item.nome}")
-                        }
-
-                        val codigoItemSelecionado: Int = readln().toInt()
-
-                        val itemSelecionado: Produto? = itensMenu.find { it.codigo == codigoItemSelecionado }
-
-                        if(itemSelecionado == null) {
-                            println("Item não encontrado")
-                        } else {
-                            println("Deseja atualizar nome? Se sim, digite o novo nome, se não aperte Enter")
-                            val novoNome: String = readln()
-                            println("Deseja atualizar a descrição? Se sim, digite o novo nome, se não aperte Enter")
-                            val novaDescricao: String = readln()
+                        try {
                             println("Deseja atualizar o preço? Se sim, digite o novo preço, se não digite 0")
                             val novoPreco: Float = readln().toFloat()
                             println("Deseja atualizar o estoque? Se sim, digite a quantidade a ser somada no estoque, se não digite 0")
@@ -109,12 +85,11 @@ fun main() {
                             }
 
                             println("Produto atualizado: $itemSelecionado")
+                        } catch (e: NumberFormatException) {
+                            println("Entrada inválida, digite um número para preço e estoque")
                         }
                     }
-                } catch (e: NumberFormatException) {
-                    println("Entrada inválida, digite um número para preço e estoque")
                 }
-
             }
             3 -> {
                 println("---CRIAÇÃO DE PEDIDO---")
@@ -324,6 +299,7 @@ fun main() {
                         7 -> pedidosPorStatus = pedidos.filter { it.status == OrderStatus.ENTREGUE }
                         8 -> {
                             println("Saindo...")
+                            estaConsultando = false
                             break
                         }
                         else -> {
