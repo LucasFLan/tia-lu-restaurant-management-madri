@@ -20,31 +20,31 @@ fun main() {
         println("===================================")
         print("Escolha uma opção: ")
 
-        val opcaoEscolhida: Int = readln().toInt()
+        val opcaoEscolhida: Int? = readln().toIntOrNull()
 
         when(opcaoEscolhida) {
+            null -> println("Entrada inválida!! Digite apenas números correspondentes às opções do menu.")
             1 -> {
                 println("===================================")
                 println("|         CADASTRO DE ITEM        |")
                 println("===================================")
-                println("Nome do item")
+                println("Nome do item: ")
                 val nomeItem = readln()
 
-                println("Descrição do item :")
+                println("Descrição do item: ")
                 val descricaoItem = readln()
 
                 try {
-                    println("Preço")
+                    println("Preço do item: ")
                     val precoItem: BigDecimal = readln().toBigDecimal()
 
-                    println("Quantidade em estoque")
+                    println("Quantidade em estoque: ")
                     val estoqueItem: Int = readln().toInt()
 
                     adicionar_item_ao_cardapio(nomeItem, descricaoItem, precoItem, estoqueItem)
                     println("Item adicionado com sucesso!!")
 
                 } catch (e: NumberFormatException){
-                    // Mudar essa mesnsagem de erro //
                     println("Entrada inválida, digite um número para preço e estoque")
                 }
             }
@@ -57,45 +57,49 @@ fun main() {
                 } else {
                     println("Qual item deseja atualizar?\n")
 
-                    cardapio.forEach { item -> "${item.codigo} - ${item.codigo}"}
+                    cardapio.forEach { item -> println("${item.codigo} - ${item.nome}")}
 
-                    val codigoItemSelecionado: Int = readln().toInt()
+                    val codigoItemSelecionado: Int? = readln().toIntOrNull()
 
-                    val itemSelecionado: ItemCardapio? = cardapio.find { it.codigo == codigoItemSelecionado }
-
-                    if(itemSelecionado == null) {
-                        println("Item não encontrado")
+                    if (codigoItemSelecionado == null) {
+                        println("Entrada inválida, digite apenas números para a seleção de um item")
                     } else {
-                        println("Deseja atualizar nome? Se sim, digite o novo nome, se não aperte Enter")
-                        val novoNome: String = readln()
-                        println("Deseja atualizar a descrição? Se sim, digite o novo nome, se não aperte Enter")
-                        val novaDescricao: String = readln()
+                        val itemSelecionado: ItemCardapio? = cardapio.find { it.codigo == codigoItemSelecionado }
 
-                        try {
-                            println("Deseja atualizar o preço? Se sim, digite o novo preço, se não aperte Enter")
-                            val novoPreco: BigDecimal? = readln().toBigDecimalOrNull()
-                            println("Deseja atualizar o estoque? Se sim, digite a quantidade a ser somada no estoque, se não aperte Enter")
-                            val novoEstoque: Int? = readln().toIntOrNull()
+                        if(itemSelecionado == null) {
+                            println("Item não encontrado")
+                        } else {
+                            println("Deseja atualizar nome? Se sim, digite o novo nome, se não aperte Enter")
+                            val novoNome: String = readln()
+                            println("Deseja atualizar a descrição? Se sim, digite o novo nome, se não aperte Enter")
+                            val novaDescricao: String = readln()
 
-                            if(novoNome != "") {
-                                itemSelecionado.nome = novoNome
+                            try {
+                                println("Deseja atualizar o preço? Se sim, digite o novo preço, se não aperte Enter")
+                                val novoPreco: BigDecimal? = readln().toBigDecimalOrNull()
+                                println("Deseja atualizar o estoque? Se sim, digite a quantidade a ser somada no estoque, se não aperte Enter")
+                                val novoEstoque: Int? = readln().toIntOrNull()
+
+                                if(novoNome != "") {
+                                    itemSelecionado.nome = novoNome
+                                }
+
+                                if(novaDescricao != "") {
+                                    itemSelecionado.descricao = novaDescricao
+                                }
+
+                                if(novoPreco != null){
+                                    itemSelecionado.preco = novoPreco
+                                }
+
+                                if(novoEstoque != null) {
+                                    itemSelecionado.estoque += novoEstoque
+                                }
+
+                                println("Produto atualizado: $itemSelecionado")
+                            } catch (e: NumberFormatException) {
+                                println("Entrada inválida, digite um número para preço e estoque")
                             }
-
-                            if(novaDescricao != "") {
-                                itemSelecionado.descricao = novaDescricao
-                            }
-
-                            if(novoPreco != null){
-                                itemSelecionado.preco = novoPreco
-                            }
-
-                            if(novoEstoque != null) {
-                                itemSelecionado.estoque += novoEstoque
-                            }
-
-                            println("Produto atualizado: $itemSelecionado")
-                        } catch (e: NumberFormatException) {
-                            println("Entrada inválida, digite um número para preço e estoque")
                         }
                     }
                 }
@@ -117,7 +121,7 @@ fun main() {
                 }
                 // Jogar a criação do pedido para a ultima coisa do processo
                 val novoPedido = Pedido(numeroPedido = numeroPedido, itens = itensEscolhidos, pagamento = "Em análise",
-                    valor = BigDecimal(0.0), status = Status.ACEITO)
+                    valor = BigDecimal(0.0), status = StatusPedido.ACEITO)
 
                 do {
                     println("===================================")
@@ -262,11 +266,11 @@ fun main() {
                         val numeroPedido = pedidoEscolhido.numeroPedido
 
                         when(statusEscolhido) {
-                            1 -> pedidos[numeroPedido].status = Status.FAZENDO
-                            2 -> pedidos[numeroPedido].status = Status.FEITO
-                            3 -> pedidos[numeroPedido].status = Status.ESPERANDO_ENTREGADOR
-                            4 -> pedidos[numeroPedido].status = Status.SAIU_PARA_ENTREGA
-                            5 -> pedidos[numeroPedido].status = Status.ENTREGUE
+                            1 -> pedidos[numeroPedido].status = StatusPedido.FAZENDO
+                            2 -> pedidos[numeroPedido].status = StatusPedido.FEITO
+                            3 -> pedidos[numeroPedido].status = StatusPedido.ESPERANDO_ENTREGADOR
+                            4 -> pedidos[numeroPedido].status = StatusPedido.SAIU_PARA_ENTREGA
+                            5 -> pedidos[numeroPedido].status = StatusPedido.ENTREGUE
                         }
 
                         println("Status do pedido ${pedidoEscolhido.numeroPedido} alterado para ${pedidoEscolhido.status} " +
@@ -291,18 +295,18 @@ fun main() {
 
                     println("Vizualizar pedidos:")
                     println("1 - VER TODOS")
-                    for ((index, status) in Status.entries.withIndex()) {
+                    for ((index, status) in StatusPedido.entries.withIndex()) {
                         println("${index + 2} - $status")
                     }
-                    println("${Status.entries.size + 2} - Sair")
+                    println("${StatusPedido.entries.size + 2} - Sair")
 
                     val opcaoEscolhida: Int = readln().toInt()
                     var pedidosPorStatus: List<Pedido>
 
                     when (opcaoEscolhida) {
                         1 -> pedidosPorStatus = pedidos
-                        in 2..Status.entries.size + 1 -> {
-                            val statusEscolhido = Status.entries[opcaoEscolhida - 2]
+                        in 2..StatusPedido.entries.size + 1 -> {
+                            val statusEscolhido = StatusPedido.entries[opcaoEscolhida - 2]
                             pedidosPorStatus = pedidos.filter { it.status == statusEscolhido }
                         }
                         8 -> {
@@ -327,7 +331,7 @@ fun main() {
                 } while (estaConsultando)
             }
             6 -> estaNaInterface = false
-            else -> println("Opção inválida")
+            else -> println("Opção inválida: insira um número entre as opções exibidas no menu.")
         }
     } while (estaNaInterface)
 }

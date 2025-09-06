@@ -1,4 +1,3 @@
-import main
 import java.math.BigDecimal
 
 data class ItemCardapio (
@@ -9,15 +8,7 @@ data class ItemCardapio (
     var codigo: Int
 )
 
-data class Pedido (
-    var numeroPedido: Int,
-    val itens: MutableList<ItemCardapio>,
-    var pagamento: String,
-    var status: Status,
-    var valor: BigDecimal
-)
-
-enum class Status {
+enum class StatusPedido {
     ACEITO,
     FAZENDO,
     FEITO,
@@ -25,6 +16,14 @@ enum class Status {
     SAIU_PARA_ENTREGA,
     ENTREGUE
 }
+
+data class Pedido (
+    var numeroPedido: Int,
+    val itens: MutableList<ItemCardapio>,
+    var pagamento: String,
+    var status: StatusPedido,
+    var valor: BigDecimal
+)
 
 val cardapio = mutableListOf<ItemCardapio>()
 
