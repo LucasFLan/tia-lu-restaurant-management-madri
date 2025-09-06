@@ -1,20 +1,23 @@
-data class Produto (
+import main
+import java.math.BigDecimal
+
+data class ItemCardapio (
     var nome: String,
     var descricao: String,
-    var preco: Float,
+    var preco: BigDecimal,
     var estoque: Int,
     var codigo: Int
 )
 
 data class Pedido (
     var numeroPedido: Int,
-    var itens: MutableList<Produto>,
+    val itens: MutableList<ItemCardapio>,
     var pagamento: String,
-    var status: OrderStatus,
-    var valor: Float
+    var status: Status,
+    var valor: BigDecimal
 )
 
-enum class OrderStatus {
+enum class Status {
     ACEITO,
     FAZENDO,
     FEITO,
@@ -23,11 +26,11 @@ enum class OrderStatus {
     ENTREGUE
 }
 
-var menu = mutableListOf<Produto>()
+val cardapio = mutableListOf<ItemCardapio>()
 
-fun adicionar_item_ao_menu(nomeItem: String, descricaoItem: String, precoItem: Float, estoqueItem: Int) {
-    val novoProduto = Produto(nome = nomeItem, descricao = descricaoItem, preco = precoItem, estoque = estoqueItem,
-        codigo = menu.size + 1)
+fun adicionar_item_ao_cardapio(nomeItem: String, descricaoItem: String, precoItem: BigDecimal, estoqueItem: Int) {
+    val novoItemCardapio = ItemCardapio(nome = nomeItem, descricao = descricaoItem, preco = precoItem, estoque = estoqueItem,
+        codigo = cardapio.size + 1)
 
-    menu.add(novoProduto)
+    cardapio.add(novoItemCardapio)
 }
