@@ -1,5 +1,19 @@
 import java.math.BigDecimal
 
+fun lerInt(mensagem: String): Int {
+    var entrada: Int?
+
+    do {
+        print(mensagem)
+        entrada = readln().toIntOrNull()
+        if(entrada == null) {
+            println("Entrada inválida! Por favor, digite um número inteiro")
+        }
+    } while (entrada == null)
+
+    return entrada
+}
+
 
 fun main() {
 
@@ -18,12 +32,10 @@ fun main() {
         println("| 5 -> Consultar pedidos            |")
         println("| 6 -> Sair                         |")
         println("===================================")
-        print("Escolha uma opção: ")
 
-        val opcaoEscolhida: Int? = readln().toIntOrNull()
+        val opcaoEscolhida: Int = lerInt("Escolha uma opção: ")
 
         when(opcaoEscolhida) {
-            null -> println("Entrada inválida!! Digite apenas números correspondentes às opções do menu.")
             1 -> {
                 println("===================================")
                 println("|         CADASTRO DE ITEM        |")
@@ -38,10 +50,9 @@ fun main() {
                     println("Preço do item: ")
                     val precoItem: BigDecimal = readln().toBigDecimal()
 
-                    println("Quantidade em estoque: ")
-                    val estoqueItem: Int = readln().toInt()
+                    val estoqueItem: Int = lerInt("Quantidade em estoque: ")
 
-                    adicionar_item_ao_cardapio(nomeItem, descricaoItem, precoItem, estoqueItem)
+                    cadastrarItemAoCardapio(nomeItem, descricaoItem, precoItem, estoqueItem)
                     println("Item adicionado com sucesso!!")
 
                 } catch (e: NumberFormatException){
@@ -323,9 +334,8 @@ fun main() {
                     if (pedidosPorStatus.isEmpty() && opcaoEscolhida != 1) {
                         println("Nenhum pedido encontrado com esse status")
                     } else {
-                        for (pedido in pedidosPorStatus) {
-                            println("Pedido ${pedido.numeroPedido} - Itens: ${pedido.itens} - VALOR: R$${pedido.valor} - ${pedido.pagamento} - ${pedido.status}")
-                        }
+                        pedidosPorStatus.forEach { pedido -> println("Pedido ${pedido.numeroPedido} - Itens: ${pedido.itens} - VALOR: " +
+                                "R$${pedido.valor} - ${pedido.pagamento} - ${pedido.status}")}
                     }
 
                 } while (estaConsultando)
