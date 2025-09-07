@@ -14,6 +14,35 @@ fun lerInt(mensagem: String): Int {
     return entrada
 }
 
+fun lerBigDecimal(mensagem: String): BigDecimal {
+    var entrada: BigDecimal?
+
+    do {
+        print(mensagem)
+        entrada = readln().toBigDecimalOrNull()
+        if(entrada == null) {
+            println("Entrada inválida! Por favor, digite um número")
+        }
+    } while (entrada == null)
+
+    return entrada
+}
+
+fun lerString(mensagem: String): String {
+    var entrada: String
+
+    do {
+        print(mensagem)
+        entrada = readln().trim()
+
+        if (entrada.isEmpty()){
+            println("A entrada não pode ser vazia")
+        }
+    } while (entrada.isEmpty())
+
+    return entrada
+}
+
 
 fun main() {
 
@@ -37,34 +66,29 @@ fun main() {
 
         when(opcaoEscolhida) {
             1 -> {
+
                 println("===================================")
                 println("|         CADASTRO DE ITEM        |")
                 println("===================================")
-                println("Nome do item: ")
-                val nomeItem = readln()
 
-                println("Descrição do item: ")
-                val descricaoItem = readln()
+                val nomeItem = lerString("Nome do item: ")
 
-                try {
-                    println("Preço do item: ")
-                    val precoItem: BigDecimal = readln().toBigDecimal()
+                val descricaoItem = lerString("Descrição do item: ")
 
-                    val estoqueItem: Int = lerInt("Quantidade em estoque: ")
+                val precoItem: BigDecimal = lerBigDecimal("Preço do item: ")
 
-                    cadastrarItemAoCardapio(nomeItem, descricaoItem, precoItem, estoqueItem)
-                    println("Item adicionado com sucesso!!")
+                val estoqueItem: Int = lerInt("Quantidade em estoque: ")
 
-                } catch (e: NumberFormatException){
-                    println("Entrada inválida, digite um número para preço e estoque")
-                }
+                cadastrarItemAoCardapio(nomeItem, descricaoItem, precoItem, estoqueItem)
+                println("Item adicionado com sucesso!!")
             }
             2 -> {
                 println("===================================")
                 println("|      ATUALIZAÇÃO DE ITENS       |")
                 println("===================================")
+
                 if(cardapio.isEmpty()) {
-                    println("Sem itens no menu\n")
+                    println("Não há itens no cardápio\n")
                 } else {
                     println("Qual item deseja atualizar?\n")
 
