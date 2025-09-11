@@ -166,7 +166,7 @@ fun main() {
                     println("| 4 | Voltar                       |")
                     println("===================================")
 
-                    val opcaoEscolhida: Int? = readln().toIntOrNull()
+                    val opcaoEscolhida: Int = lerInt("")
 
                     when (opcaoEscolhida) {
                         1 -> {
@@ -175,41 +175,39 @@ fun main() {
                                     println("Nenhum item cadastrado\n")
                                 } else {
 
-                                println("Qual item deseja adicionar ao pedido?\n")
-                                for (item in cardapio) {
-                                    println(
-                                        "${item.codigo} - ${item.nome} | Descrição: ${item.descricao} | " +
-                                                "Preço: R$${item.preco} | Quantidade disponível: ${item.estoque}"
-                                    )
-                                }
-
-                                val codigoItemEscolhido: Int? = readln().toIntOrNull()
-
-                                val produtoEscolhido: ItemCardapio? = cardapio.find { it.codigo == codigoItemEscolhido }
-
-                                if (produtoEscolhido == null) {
-                                    println("Produto nao encontrado")
-                                } else {
-
-                                    println("Item escolhido: ${produtoEscolhido.nome}")
-                                    println("Deseja adicionar quantos? (estoque disponível: ${produtoEscolhido.estoque})")
-                                    quantidade = readln().toInt()
-
-                                    // Mudar a mensagem pra ("Digite a quantidade entre 1 e ${quantidade.estoque}")
-                                    if (quantidade <= 0 || quantidade > produtoEscolhido.estoque) {
-                                        println("Número no estoque indisponível")
-                                    } else {
-                                        itensEscolhidos.add(produtoEscolhido)
-                                        produtoEscolhido.estoque = produtoEscolhido.estoque - quantidade
-
-                                        novoPedido.valor += (produtoEscolhido.preco * quantidade.toBigDecimal())
-
-                                        println("${produtoEscolhido.nome} adicionado com sucesso\n")
+                                    println("Qual item deseja adicionar ao pedido?\n")
+                                    for (item in cardapio) {
+                                        println(
+                                            "${item.codigo} - ${item.nome} | Descrição: ${item.descricao} | " +
+                                                    "Preço: R$${item.preco} | Quantidade disponível: ${item.estoque}"
+                                        )
                                     }
 
-                                    escolhendoItens = false
+                                    val codigoItemEscolhido: Int = lerInt("")
+
+                                    val produtoEscolhido: ItemCardapio? = cardapio.find { it.codigo == codigoItemEscolhido }
+
+                                    if (produtoEscolhido == null) {
+                                        println("Produto nao encontrado")
+                                    } else {
+                                        println("Item escolhido: ${produtoEscolhido.nome}")
+                                        quantidade = lerInt("Deseja adicionar quantos? (estoque disponível: ${produtoEscolhido.estoque})")
+
+                                        // Mudar a mensagem pra ("Digite a quantidade entre 1 e ${quantidade.estoque}")
+                                        if (quantidade <= 0 || quantidade > produtoEscolhido.estoque) {
+                                            println("Número no estoque indisponível")
+                                        } else {
+                                            itensEscolhidos.add(produtoEscolhido)
+                                            produtoEscolhido.estoque = produtoEscolhido.estoque - quantidade
+
+                                            novoPedido.valor += (produtoEscolhido.preco * quantidade.toBigDecimal())
+
+                                            println("${produtoEscolhido.nome} adicionado com sucesso\n")
+                                        }
+
+                                        escolhendoItens = false
+                                    }
                                 }
-                            }
                             } while (escolhendoItens)
                         }
                         2 -> {
@@ -240,8 +238,8 @@ fun main() {
 
                                 pedidos[numeroPedido].pagamento = "Pago"
                                 fazendoPedido = false
-                                    }
-                                }
+                            }
+                        }
                         3 -> {
                             if (itensEscolhidos.isEmpty()) {
                                 println("O carrinho está vazio")
@@ -319,49 +317,45 @@ fun main() {
                 println("|       CONSULTA DE PEDIDOS       |")
                 println("===================================")
 
-                var estaConsultando = true
+                var estaConsultando: Boolean = true
 
                 do {
-
                     if(pedidos.isEmpty()) {
-                        println("Sem pedidos por enquanto!\n")
-                        break
-                    }
-
-                    println("Vizualizar pedidos:")
-                    println("1 - VER TODOS")
-                    for ((index, status) in StatusPedido.entries.withIndex()) {
-                        println("${index + 2} - $status")
-                    }
-                    println("${StatusPedido.entries.size + 2} - Sair")
-
-                    val opcaoEscolhida: Int = readln().toInt()
-                    var pedidosPorStatus: List<Pedido>
-
-                    when (opcaoEscolhida) {
-                        1 -> pedidosPorStatus = pedidos
-                        in 2..StatusPedido.entries.size + 1 -> {
-                            val statusEscolhido = StatusPedido.entries[opcaoEscolhida - 2]
-                            pedidosPorStatus = pedidos.filter { it.status == statusEscolhido }
-                        }
-                        8 -> {
-                            println("Saindo...")
-                            estaConsultando = false
-                            break
-                        }
-                        else -> {
-                            println("Opção inválida!")
-                            break
-                        }
-                    }
-
-                    if (pedidosPorStatus.isEmpty() && opcaoEscolhida != 1) {
-                        println("Nenhum pedido encontrado com esse status")
+                        println("Sem pedidos por enquanto!")
+                        estaConsultando = false
                     } else {
-                        pedidosPorStatus.forEach { pedido -> println("Pedido ${pedido.numeroPedido} - Itens: ${pedido.itens} - VALOR: " +
-                                "R$${pedido.valor} - ${pedido.pagamento} - ${pedido.status}")}
-                    }
+                        val opcaoSair: Int = StatusPedido.entries.size + 2
 
+                        println("Vizualizar pedidos:")
+                        println("1 - VER TODOS")
+                        StatusPedido.entries.forEachIndexed { index, status -> println("${index + 2} - $status") }
+                        println("$opcaoSair - Sair")
+
+                        val opcaoEscolhida: Int = lerInt("")
+
+                        if (opcaoEscolhida == opcaoSair) {
+                            println("Saindo da consulta...")
+                            estaConsultando = false
+                        } else {
+                            val pedidosPorStatus: List<Pedido> = when (opcaoEscolhida) {
+                                1 -> pedidos
+                                in 2..StatusPedido.entries.size + 1 -> {
+                                    val statusEscolhido = StatusPedido.entries[opcaoEscolhida - 2]
+                                    pedidos.filter { it.status == statusEscolhido }
+                                }
+                                else -> {
+                                    emptyList()
+                                }
+                            }
+
+                            if (pedidosPorStatus.isEmpty()) {
+                                println("Nenhum pedido encontrado com esse status")
+                            } else {
+                                pedidosPorStatus.forEach { pedido -> println("Pedido ${pedido.numeroPedido} - Itens: ${pedido.itens} - VALOR: " +
+                                        "R$${pedido.valor} - ${pedido.pagamento} - ${pedido.status}")}
+                            }
+                        }
+                    }
                 } while (estaConsultando)
             }
             6 -> estaNaInterface = false
