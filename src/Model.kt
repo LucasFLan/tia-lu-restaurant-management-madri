@@ -26,10 +26,12 @@ data class Pedido (
 )
 
 val cardapio = mutableListOf<ItemCardapio>()
+var codigoItem: Int = 1
+var numeroPedido = 0
 
 fun cadastrarItemAoCardapio(nomeItem: String, descricaoItem: String, precoItem: BigDecimal, estoqueItem: Int) {
     val novoItemCardapio = ItemCardapio(nome = nomeItem, descricao = descricaoItem, preco = precoItem, estoque = estoqueItem,
-        codigo = cardapio.size + 1)
+        codigo = codigoItem++)
 
     cardapio.add(novoItemCardapio)
 }
