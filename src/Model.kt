@@ -19,15 +19,22 @@ enum class StatusPedido {
 
 data class Pedido (
     var numeroPedido: Int,
-    val itens: MutableList<ItemCardapio>,
     var pagamento: String,
     var status: StatusPedido,
     var valor: BigDecimal
 )
 
+data class PedidoItem (
+    val codigoPedido: Int,
+    val codigoItem: Int,
+    var quantidade: Int,
+)
+
 val cardapio = mutableListOf<ItemCardapio>()
 var codigoItem: Int = 1
-var numeroPedido = 0
+var numeroPedido = 1
+val pedidos = mutableListOf<Pedido>()
+val itensPedido = mutableListOf<PedidoItem>()
 
 fun cadastrarItemAoCardapio(nomeItem: String, descricaoItem: String, precoItem: BigDecimal, estoqueItem: Int) {
     val novoItemCardapio = ItemCardapio(nome = nomeItem, descricao = descricaoItem, preco = precoItem, estoque = estoqueItem,

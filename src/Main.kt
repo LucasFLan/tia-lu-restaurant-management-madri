@@ -46,10 +46,29 @@ fun lerString(mensagem: String): String {
     return entrada
 }
 
+fun <T> lerEntradaValida(mensagem: String, valorAtual: T, conversor: (String) -> T): T {
+    var resultado: T? = null
+
+    do {
+        print("$mensagem (Atual: $valorAtual)")
+        val entrada = readln()
+
+        if (entrada.trim() == ""){
+            resultado = valorAtual
+        }
+
+        try {
+            resultado = conversor(entrada)
+        } catch (e: Exception) {
+            println("Entrada inválida. Por favor, tente novamente.")
+        }
+    } while (resultado == null)
+
+    return resultado
+}
+
 
 fun main() {
-
-    val pedidos = mutableListOf<Pedido>()
 
     var estaNaInterface = true
 
@@ -139,35 +158,33 @@ fun main() {
                 }
             }
             3 -> {
-                println("===================================")
-                println("|       CRIAÇÃO DE PEDIDOS        |")
-                println("===================================")
-
-                var fazendoPedido = true
-                var escolhendoItens = true
-                val itensEscolhidos = mutableListOf<ItemCardapio>()
-                var quantidade = 0
-
-                val novoPedido = Pedido(numeroPedido = numeroPedido, itens = itensEscolhidos, pagamento = "Em análise",
-                    valor = BigDecimal("0"), status = StatusPedido.ACEITO)
-
-                do {
+                if(cardapio.isEmpty()){
+                    println("\nNenhum item cadastrado no cardápio\n")
+                } else {
                     println("===================================")
-                    println("| 1 | Adicionar itens ao pedido    |")
-                    println("| 2 | Finalizar pedido             |")
-                    println("| 3 | Limpar carrinho              |")
-                    println("| 4 | Voltar                       |")
+                    println("|       CRIAÇÃO DE PEDIDOS        |")
                     println("===================================")
 
-                    val opcaoEscolhida: Int = lerInt("")
+                    var fazendoPedido = true
+                    var escolhendoItens = true
+                    var quantidade = 0
 
-                    when (opcaoEscolhida) {
-                        1 -> {
-                            do {
-                                if (cardapio.isEmpty()) {
-                                    println("Nenhum item cadastrado\n")
-                                } else {
+                    val novoPedido = Pedido(numeroPedido = numeroPedido, pagamento = "Em análise",
+                        valor = BigDecimal("0"), status = StatusPedido.ACEITO)
 
+                    do {
+                        println("===================================")
+                        println("| 1 | Adicionar itens ao pedido    |")
+                        println("| 2 | Finalizar pedido             |")
+                        println("| 3 | Limpar carrinho              |")
+                        println("| 4 | Voltar                       |")
+                        println("===================================")
+
+                        val opcaoEscolhida: Int = lerInt("")
+
+                        when (opcaoEscolhida) {
+                            1 -> {
+                                do {
                                     println("Qual item deseja adicionar ao pedido?\n")
                                     for (item in cardapio) {
                                         println(
@@ -186,12 +203,17 @@ fun main() {
                                         println("Item escolhido: ${produtoEscolhido.nome}")
                                         quantidade = lerInt("Deseja adicionar quantos? (estoque disponível - ${produtoEscolhido.estoque}): ")
 
-                                        // Mudar a mensagem pra ("Digite a quantidade entre 1 e ${quantidade.estoque}")
                                         if (quantidade <= 0 || quantidade > produtoEscolhido.estoque) {
-                                            println("Número no estoque indisponível")
+                                            println("Digite a quantidade entre 1 e ${produtoEscolhido.estoque}")
                                         } else {
-                                            itensEscolhidos.add(produtoEscolhido)
-                                            produtoEscolhido.estoque = produtoEscolhido.estoque - quantidade
+
+                                            val itemJaFoiAdicionado: PedidoItem? = itensPedido.find { pedidoItem -> pedidoItem.codigoPedido == numeroPedido && pedidoItem.codigoItem == produtoEscolhido.codigo }
+
+                                            if(itemJaFoiAdicionado == null) {
+                                                itensPedido.add(PedidoItem(novoPedido.numeroPedido, produtoEscolhido.codigo, quantidade))
+                                            } else {
+                                                itemJaFoiAdicionado.quantidade = quantidade
+                                            }
 
                                             novoPedido.valor += (produtoEscolhido.preco * quantidade.toBigDecimal())
 
@@ -199,69 +221,82 @@ fun main() {
                                         }
                                         escolhendoItens = false
                                     }
-                                }
-                            } while (escolhendoItens)
-                        }
-                        2 -> {
-                            if(novoPedido.itens.isEmpty()) {
-                                println("Você deve escolher no minímo um item para finalizar o pedido")
-                            } else {
-                                println("Total do seu pedido: ${novoPedido.valor}")
-                                println("Deseja adicionar cupom? Se sim, digite cupom, se não aperte Enter")
+                                } while (escolhendoItens)
+                            }
+                            2 -> {
+                                val pedidoTemItem: Boolean = itensPedido.none {it.codigoPedido == novoPedido.numeroPedido}
 
-                                val porcentagemDesconto = BigDecimal("0.1")
-                                val cuponsValidos: List<String> = listOf("DEZ", "SEXTOU", "TIALU")
-                                var cupomAutorizado = false
+                                if(pedidoTemItem) {
+                                    println("Você deve escolher no minímo um item para finalizar o pedido")
+                                } else {
+                                    println("Total do seu pedido: ${novoPedido.valor}")
+                                    println("Deseja adicionar cupom? Se sim, digite cupom, se não aperte Enter")
 
-                                do {
-                                    val querCupom: String = readln()
+                                    val porcentagemDesconto = BigDecimal("0.1")
+                                    val cuponsValidos: List<String> = listOf("DEZ", "SEXTOU", "TIALU")
+                                    var cupomAutorizado = false
 
-                                    if (querCupom.trim() == ""){
-                                        cupomAutorizado = true
-                                    } else {
-                                        if (cuponsValidos.contains(querCupom.trim().uppercase())) {
-                                            val valorComDesconto = novoPedido.valor * (BigDecimal.ONE - porcentagemDesconto)
-                                            novoPedido.valor = valorComDesconto
+                                    do {
+                                        val querCupom: String = readln()
+
+                                        if (querCupom.trim() == ""){
                                             cupomAutorizado = true
                                         } else {
-                                            println("Cupom inválido, tente novamente ou aperte Enter para prosseguir sem cumpom")
+                                            if (cuponsValidos.contains(querCupom.trim().uppercase())) {
+                                                val valorComDesconto = novoPedido.valor * (BigDecimal.ONE - porcentagemDesconto)
+                                                novoPedido.valor = valorComDesconto
+                                                cupomAutorizado = true
+                                            } else {
+                                                println("Cupom inválido, tente novamente ou aperte Enter para prosseguir sem cupom")
+                                            }
+                                        }
+                                    } while (!cupomAutorizado)
+
+                                    novoPedido.pagamento = "Pago"
+
+                                    itensPedido.forEach { itemPedido ->
+                                        if (itemPedido.codigoPedido == novoPedido.numeroPedido) {
+                                            val itemEscolhido = cardapio.find { item -> itemPedido.codigoItem == item.codigo }
+
+                                            itemEscolhido!!.estoque -= itemPedido.quantidade
+
                                         }
                                     }
-                                } while (!cupomAutorizado)
 
-                                novoPedido.pagamento = "Pago"
+                                    pedidos.add(novoPedido)
 
-                                pedidos.add(novoPedido)
+                                    println("Pedido efetuado com sucesso. O total da sua conta é R$${novoPedido.valor}\n\n")
 
-                                println("Pedido efetuado com sucesso. O total da sua conta é R$${novoPedido.valor}\n\n")
+                                    numeroPedido++
 
-                                numeroPedido++
+                                    println(itensPedido)
 
-                                fazendoPedido = false
-                            }
-                        }
-                        3 -> {
-                            if (itensEscolhidos.isEmpty()) {
-                                println("O carrinho já está vazio")
-                            } else {
-                                itensEscolhidos.forEach {
-                                    cardapio[it.codigo - 1].estoque += quantidade
+                                    fazendoPedido = false
                                 }
-                                novoPedido.valor = BigDecimal("0")
-                                itensEscolhidos.clear()
-                                println("Carrinho limpo com sucesso!\n")
                             }
-                        }
-                        4 -> {
-                            if (itensEscolhidos.isEmpty()) {
-                                fazendoPedido = false
-                            } else {
-                                println("Você deve finalizar o seu pedido ou limpar o seu carrinho!!!")
+                            3 -> {
+                                if (itensPedido.isEmpty()) {
+                                    println("O carrinho já está vazio")
+                                } else {
+                                    itensPedido.forEach {
+                                        cardapio[it.codigoItem - 1].estoque += quantidade
+                                    }
+                                    novoPedido.valor = BigDecimal("0")
+                                    itensPedido.clear()
+                                    println("Carrinho limpo com sucesso!\n")
+                                }
                             }
+                            4 -> {
+                                if (itensPedido.isEmpty()) {
+                                    fazendoPedido = false
+                                } else {
+                                    println("Você deve finalizar o seu pedido ou limpar o seu carrinho!!!")
+                                }
+                            }
+                            else -> println("Digite uma opção válida")
                         }
-                        else -> println("Digite uma opção válida")
-                    }
-                } while (fazendoPedido)
+                    } while (fazendoPedido)
+                }
             }
             4 -> {
                 println("===========================================")
@@ -344,8 +379,18 @@ fun main() {
                             if (pedidosPorStatus.isEmpty()) {
                                 println("Nenhum pedido encontrado com esse status")
                             } else {
-                                pedidosPorStatus.forEach { pedido -> println("Pedido ${pedido.numeroPedido} - Itens: ${pedido.itens} - VALOR: " +
-                                        "R$${pedido.valor} - ${pedido.pagamento} - ${pedido.status}")}
+                                pedidosPorStatus.forEach { pedido ->
+                                    println("\nPedido ${pedido.numeroPedido} - VALOR: " +
+                                        "R$${pedido.valor} - ${pedido.pagamento} - ${pedido.status}")
+
+                                    val itensPedido: List<PedidoItem> = itensPedido.filter { it.codigoPedido == pedido.numeroPedido }
+
+                                    print("Itens: ")
+                                    itensPedido.forEach { item ->
+                                        val nomeItem = cardapio.find { it.codigo == item.codigoItem }
+                                        print("| ${nomeItem!!.nome}, quantidade: ${item.quantidade} | ") }
+                                }
+                                println("\n")
                             }
                         }
                     }
